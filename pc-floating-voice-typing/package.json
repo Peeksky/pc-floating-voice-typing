@@ -1,0 +1,40 @@
+{
+  "name": "pc-floating-voice-typing",
+  "productName": "PC Floating Voice Typing",
+  "version": "1.0.0",
+  "description": "Windows floating voice typing prototype using Web Speech API",
+  "main": "main.js",
+  "author": "Local Desktop App",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.pcfloatingvoicetyping.app",
+    "productName": "PC Floating Voice Typing",
+    "directories": { "output": "dist" },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "overlay.html",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "artifactName": "PC-Floating-Voice-Typing-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Master Caption Tool PRO</title>
+<style>
+:root{--bg:#171717;--card:#222;--panel:#2d2d2d;--border:#454545;--text:#f4f4f4;--muted:#aaa;--accent:#00c9a7;--btn:#383838}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}.app{max-width:1100px;margin:18px auto;padding:24px 26px 32px;background:var(--card);border-radius:18px;box-shadow:0 18px 50px #0005}.header{display:flex;justify-content:space-between;align-items:center}.brand h1{margin:0;font-size:28px;background:linear-gradient(90deg,#6c63ff,#00c9a7);-webkit-background-clip:text;color:transparent}.brand p{margin:7px 0 0;color:#aaa;font-size:14px}.header-actions{display:flex;gap:8px}.icon-btn{width:44px;height:44px;border:1px solid var(--border);border-radius:9px;background:var(--btn);color:var(--text);cursor:pointer;font-size:20px}.toolbar,.button-grid{display:flex;flex-wrap:wrap;gap:8px}.toolbar{margin:22px 0 18px}.tool-btn,.voice-controls button,.voice-controls select{border:1px solid var(--border);background:var(--btn);color:var(--text);border-radius:7px;padding:10px 14px;font-weight:600;cursor:pointer}.tool-btn:hover,.icon-btn:hover{filter:brightness(1.15)}.primary{background:var(--accent)!important;color:#071411!important;border-color:var(--accent)!important}.label-row{margin-bottom:7px}label{font-size:14px;font-weight:700}textarea{width:100%;min-height:270px;resize:vertical;background:var(--panel);border:1.5px solid #6c63ff;border-radius:11px;color:var(--text);padding:18px 15px;font-size:16px;line-height:1.6;outline:none}textarea:focus{box-shadow:0 0 0 2px #6c63ff30}.stats{text-align:right;color:#aaa;font-size:13px;margin:8px 2px 20px}.main-action{display:flex;justify-content:center;gap:9px;margin:8px 0 22px}.main-action .tool-btn{padding:12px 22px}.section{margin-top:20px}.section h3{font-size:14px;margin:0 0 9px}.options{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;padding:13px;background:var(--panel);border:1px solid var(--border);border-radius:10px}.options label{font-weight:500;font-size:13px;display:flex;gap:7px;align-items:center}.options input{accent-color:var(--accent)}.status{text-align:center;min-height:20px;color:#7ee9d6;font-size:13px}.voice-panel{display:none;margin-bottom:18px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--panel)}.voice-panel.open{display:block}.voice-top{display:flex;justify-content:space-between;align-items:center}.voice-title{font-weight:700}.voice-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}.voice-controls select{min-width:150px}.voice-record{background:#e84c62!important;color:white!important;border-color:#e84c62!important}.voice-record.listening{animation:pulse 1.1s infinite}@keyframes pulse{50%{transform:scale(1.03);opacity:.8}}.voice-status{margin-top:9px;color:#7ee9d6;font-size:13px}.voice-help{margin-top:7px;color:var(--muted);font-size:12px;line-height:1.5}@media(max-width:700px){.app{margin:0;border-radius:0;min-height:100vh;padding:18px}.brand h1{font-size:23px}textarea{min-height:240px}.tool-btn{padding:9px 11px;font-size:13px}}
+</style></head><body>
+<div class="app">
+<div class="header"><div class="brand"><h1>Master Caption Tool PRO</h1><p>Text Converter • Cleaner • List Tools • Formatter</p></div><div class="header-actions"><button class="icon-btn" id="voiceToggle" title="Voice Typing" aria-label="Open voice typing" type="button">🎙️</button><button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme" type="button">◐</button></div></div>
+<div class="toolbar"><button class="tool-btn" onclick="copyText()">📋 Copy</button><button class="tool-btn" onclick="downloadTxt()">⬇ Download</button><button class="tool-btn" onclick="undoText()">↶ Undo</button><button class="tool-btn" onclick="clearText()">🗑 Clear</button></div>
+<div class="voice-panel" id="voicePanel"><div class="voice-top"><div class="voice-title">🎙️ Voice Typing</div><button class="tool-btn" onclick="toggleVoicePanel()">✕ Close</button></div><div class="voice-controls"><select id="voiceLanguage"><option value="hi-IN">🇮🇳 Hindi</option><option value="en-IN" selected>🇮🇳 English (India)</option><option value="en-US">🇺🇸 English (US)</option><option value="hinglish">🇮🇳 Hinglish</option></select><button class="voice-record" id="voiceRecordBtn" onclick="toggleListening()">● Start Voice Typing</button><button onclick="insertVoiceNewLine()">↵ New Line</button><button onclick="clearVoiceText()">Clear Voice</button></div><div class="voice-status" id="voiceStatus" role="status" aria-live="polite">Ready. Select Hindi, English or Hinglish.</div><div class="voice-help">Fast preview shows partial speech while you talk. Hindi = hi-IN; English = selected English locale. Hinglish uses Hindi recognition plus a lightweight Roman transliteration, so spellings may need correction. Browser speech recognition may use an online service and needs microphone permission; no API key is required.</div></div>
+<div class="label-row"><label>Input Text</label></div><textarea id="input" placeholder="Paste or type your text here..."></textarea><div class="stats" id="stats">Words: 0 &nbsp; Characters: 0 &nbsp; Lines: 0</div>
+<div class="main-action"><button class="tool-btn primary" onclick="listToComma()">➜ Convert List to Comma-Separated</button><button class="tool-btn" onclick="commaToList()">⇄</button></div>
+<div class="section"><h3>Case Converter</h3><div class="button-grid"><button class="tool-btn" onclick="convertCase('sentence')">Sentence case</button><button class="tool-btn" onclick="convertCase('lower')">lower case</button><button class="tool-btn" onclick="convertCase('upper')">UPPER CASE</button><button class="tool-btn" onclick="convertCase('capitalized')">Capitalized Case</button><button class="tool-btn" onclick="convertCase('title')">Title Case</button></div></div>
+<div class="section"><h3>List &amp; Text Cleaner</h3><div class="button-grid"><button class="tool-btn" onclick="removeExtraSpaces()">Remove Extra Spaces</button><button class="tool-btn" onclick="removeExtraDots()">Remove Extra Dots (.)</button><button class="tool-btn" onclick="removeEmptyLines()">Remove Empty Lines</button><button class="tool-btn" onclick="removeDuplicateLines()">Remove Duplicate Lines</button><button class="tool-btn" onclick="removeNumbering()">Remove Numbering</button><button class="tool-btn" onclick="removeBullets()">Remove Bullets</button><button class="tool-btn" onclick="removeLineBreaks()">Remove Line Breaks</button><button class="tool-btn" onclick="trimLines()">Trim Lines</button></div></div>
+<div class="section"><h3>Sort &amp; Arrange</h3><div class="button-grid"><button class="tool-btn" onclick="sortLines(true)">A → Z</button><button class="tool-btn" onclick="sortLines(false)">Z → A</button><button class="tool-btn" onclick="randomize()">Randomize</button><button class="tool-btn" onclick="reverseText()">Reverse Text</button></div></div>
+<div class="section"><h3>Conversion Options</h3><div class="options"><label><input type="checkbox" id="removeNumberOption" checked> Remove numbering</label><label><input type="checkbox" id="removeBulletOption" checked> Remove bullets</label><label><input type="checkbox" id="removeDuplicateOption"> Remove duplicates</label><label><input type="checkbox" id="removeDotOption" checked> Remove ending dots</label><label><input type="checkbox" id="trimOption" checked> Trim spaces</label><label><input type="checkbox" id="autoSpaceOption" checked> Space after comma</label></div></div>
+<div class="toolbar" style="margin-top:18px"><button class="tool-btn primary" onclick="copyText()">📋 Copy Result</button><button class="tool-btn" onclick="downloadTxt()">⬇ Download TXT</button><button class="tool-btn" onclick="undoText()">↶ Undo</button><button class="tool-btn" onclick="clearText()">🗑 Clear</button></div><div class="status" id="status"></div>
+</div>
+<script>
+const input=document.getElementById('input'),stats=document.getElementById('stats'),statusEl=document.getElementById('status');let historyStack=[];
+function saveHistory(){if(!historyStack.length||historyStack.at(-1)!==input.value)historyStack.push(input.value);if(historyStack.length>50)historyStack.shift()}function setText(v){saveHistory();input.value=v;updateStats()}function updateStats(){let t=input.value;stats.textContent=`Words: ${t.trim()?t.trim().split(/\s+/).length:0}   Characters: ${t.length}   Lines: ${t?t.split(/\r?\n/).length:0}`}input.addEventListener('input',()=>{updateStats();if(!listening)voiceBase=input.value});updateStats();function showStatus(m){statusEl.textContent=m;clearTimeout(showStatus.t);showStatus.t=setTimeout(()=>statusEl.textContent='',2200)}
+function copyText(){
+  const text=input.value||'';
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(()=>showStatus('Copied to clipboard'))
+      .catch(()=>fallbackCopy());
+  }else{fallbackCopy();}
+  function fallbackCopy(){
+    input.focus();input.select();
+    try{const ok=document.execCommand('copy');showStatus(ok?'Copied to clipboard':'Copy failed — select the text and copy manually');}
+    catch(e){showStatus('Copy failed — select the text and copy manually');}
+  }
+}
+function downloadTxt(){let b=new Blob([input.value],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='master-caption-result.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);showStatus('TXT downloaded')}function undoText(){if(historyStack.length){input.value=historyStack.pop()||'';updateStats();showStatus('Undo applied')}else showStatus('Nothing to undo')}function clearText(){if(input.value){saveHistory();input.value='';updateStats();showStatus('Text cleared')}}
+function cleanLine(x){if(document.getElementById('removeNumberOption').checked)x=x.replace(/^\s*(?:\d+\s*[.)]|[A-Za-z]\s*[.)])\s*/,'');if(document.getElementById('removeBulletOption').checked)x=x.replace(/^\s*[•●○▪▫◦‣⁃*-]\s*/,'');if(document.getElementById('removeDotOption').checked)x=x.replace(/\.+\s*$/,'');return document.getElementById('trimOption').checked?x.trim():x}
+function listToComma(){let a=input.value.split(/\r?\n/).map(cleanLine).filter(x=>x.trim());if(document.getElementById('removeDuplicateOption').checked){let s=new Set();a=a.filter(x=>{let k=x.toLowerCase();if(s.has(k))return false;s.add(k);return true})}a=a.map(x=>x.replace(/,+\s*$/,'').trim());setText(a.join(document.getElementById('autoSpaceOption').checked?', ':','));showStatus('List converted to comma-separated text')}
+function commaToList(){let a=input.value.split(',').map(cleanLine).filter(x=>x.trim());if(document.getElementById('removeDuplicateOption').checked){let s=new Set();a=a.filter(x=>{let k=x.toLowerCase();if(s.has(k))return false;s.add(k);return true})}setText(a.join('\n'));showStatus('Comma-separated text converted to list')}
+function convertCase(t){let a=input.value.split(/\r?\n/);if(t==='lower')a=a.map(x=>x.toLowerCase());if(t==='upper')a=a.map(x=>x.toUpperCase());if(t==='capitalized')a=a.map(x=>x.replace(/\b\w/g,c=>c.toUpperCase()));if(t==='title')a=a.map(x=>x.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()));if(t==='sentence')a=a.map(x=>x.charAt(0).toUpperCase()+x.slice(1).toLowerCase());setText(a.join('\n'));showStatus('Case converted')}
+function removeExtraSpaces(){setText(input.value.split(/\r?\n/).map(x=>x.replace(/[ \t]+/g,' ').trim()).join('\n'));showStatus('Extra spaces removed')}function removeExtraDots(){setText(input.value.split(/\r?\n/).map(x=>x.replace(/\.+\s*$/,'').trim()).join('\n'));showStatus('Extra dots removed')}function removeEmptyLines(){setText(input.value.split(/\r?\n/).filter(x=>x.trim()).join('\n'));showStatus('Empty lines removed')}function removeDuplicateLines(){let s=new Set(),a=[];input.value.split(/\r?\n/).forEach(x=>{let k=x.trim().toLowerCase();if(k&&!s.has(k)){s.add(k);a.push(x.trim())}});setText(a.join('\n'));showStatus('Duplicate lines removed')}function removeNumbering(){setText(input.value.split(/\r?\n/).map(x=>x.replace(/^\s*(?:\d+\s*[.)]|[A-Za-z]\s*[.)])\s*/,'')).join('\n'));showStatus('Numbering removed')}function removeBullets(){setText(input.value.split(/\r?\n/).map(x=>x.replace(/^\s*[•●○▪▫◦‣⁃*-]\s*/,'' )).join('\n'));showStatus('Bullets removed')}function removeLineBreaks(){setText(input.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).join(' '));showStatus('Line breaks removed')}function trimLines(){setText(input.value.split(/\r?\n/).map(x=>x.trim()).join('\n'));showStatus('Lines trimmed')}function sortLines(asc){let a=input.value.split(/\r?\n/).filter(x=>x.trim());a.sort((x,y)=>asc?x.localeCompare(y,undefined,{sensitivity:'base'}):y.localeCompare(x,undefined,{sensitivity:'base'}));setText(a.join('\n'));showStatus(asc?'Sorted A-Z':'Sorted Z-A')}function randomize(){let a=input.value.split(/\r?\n/);for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}setText(a.join('\n'));showStatus('Lines randomized')}function reverseText(){setText([...input.value].reverse().join(''));showStatus('Text reversed')}
+// Voice typing: Web Speech API. Recognition speed/accuracy is ultimately browser-service dependent.
+const voicePanel=document.getElementById('voicePanel');
+const voiceStatus=document.getElementById('voiceStatus');
+const voiceBtn=document.getElementById('voiceRecordBtn');
+const voiceLanguage=document.getElementById('voiceLanguage');
+let recognition=null, listening=false, voiceBase='', restartTimer=null, voiceSessionId=0;
+
+function toggleVoicePanel(){voicePanel.classList.toggle('open')}
+document.getElementById('voiceToggle').onclick=toggleVoicePanel;
+
+function SR(){return window.SpeechRecognition||window.webkitSpeechRecognition}
+
+function startListening(){
+  const C=SR();
+  if(!C){
+    voicePanel.classList.add('open');
+    voiceStatus.textContent='Voice recognition is not supported in this browser. Please try the latest Chrome or Edge.';
+    return;
+  }
+  if(!window.isSecureContext && location.hostname!=='localhost'){
+    voicePanel.classList.add('open');
+    voiceStatus.textContent='Microphone access generally requires HTTPS. Open this Blogger page using its https:// address.';
+    return;
+  }
+
+  saveHistory();
+  voiceBase=input.value;
+  listening=true;
+  voiceSessionId++;
+  const session=voiceSessionId;
+  createRecognition(C, session);
+}
+
+function createRecognition(C, session){
+  if(!listening || session!==voiceSessionId) return;
+  recognition=new C();
+  const thisRecognition=recognition;
+  const mode=voiceLanguage.value;
+
+  thisRecognition.continuous=true;
+  thisRecognition.interimResults=true;
+  thisRecognition.maxAlternatives=1;
+  thisRecognition.lang=mode==='hinglish'?'hi-IN':mode;
+
+  thisRecognition.onstart=()=>{
+    if(session!==voiceSessionId)return;
+    voiceBtn.textContent='■ Stop Voice Typing';
+    voiceBtn.classList.add('listening');
+    voiceStatus.textContent='🎙️ Listening… speak naturally.';
+  };
+
+  thisRecognition.onresult=(event)=>{
+    if(session!==voiceSessionId)return;
+    let finalText='', interimText='';
+    for(let i=event.resultIndex;i<event.results.length;i++){
+      const result=event.results[i];
+      const transcript=result[0] ? result[0].transcript : '';
+      if(result.isFinal) finalText+=transcript;
+      else interimText+=transcript;
+    }
+
+    // Commit final speech once; show interim speech as a temporary preview only.
+    if(finalText.trim()){
+      let committed=finalText.trim();
+      if(mode==='hinglish') committed=toRomanHinglish(committed);
+      const separator=voiceBase && !/[\\s\\n]$/.test(voiceBase)?' ':'';
+      voiceBase+=separator+committed;
+    }
+
+    const preview=interimText.trim();
+    const separator=voiceBase && !/[\\s\\n]$/.test(voiceBase)?' ':'';
+    input.value=voiceBase+(preview?separator+(mode==='hinglish'?toRomanHinglish(preview):preview):'');
+    updateStats();
+    voiceStatus.textContent=preview?'🎙️ '+preview:'🎙️ Listening…';
+  };
+
+  thisRecognition.onerror=(event)=>{
+    if(session!==voiceSessionId)return;
+    const messages={
+      'not-allowed':'Microphone permission blocked. Allow microphone access in your browser settings.',
+      'service-not-allowed':'The speech-recognition service is unavailable.',
+      'no-speech':'No speech detected yet. Keep speaking or restart the microphone.',
+      'audio-capture':'No microphone was found.',
+      'network':'Speech service network error. Check your connection and try again.',
+      'aborted':'Voice typing was stopped.'
+    };
+    voiceStatus.textContent=messages[event.error]||('Voice recognition error: '+event.error);
+    if(event.error==='not-allowed'||event.error==='service-not-allowed'||event.error==='audio-capture'){
+      listening=false;
+    }
+  };
+
+  thisRecognition.onend=()=>{
+    if(session!==voiceSessionId)return;
+    if(listening){
+      // Chrome may close a session automatically. Restart promptly, without overlapping sessions.
+      voiceStatus.textContent='Reconnecting voice recognition…';
+      clearTimeout(restartTimer);
+      restartTimer=setTimeout(()=>{
+        if(listening && session===voiceSessionId) createRecognition(C,session);
+      },180);
+    }else{
+      input.value=voiceBase;
+      updateStats();
+      voiceBtn.textContent='● Start Voice Typing';
+      voiceBtn.classList.remove('listening');
+      voiceStatus.textContent='Voice typing stopped.';
+    }
+  };
+
+  try{
+    thisRecognition.start();
+  }catch(error){
+    // A short retry handles browsers that are still closing a previous recognition session.
+    clearTimeout(restartTimer);
+    restartTimer=setTimeout(()=>{
+      if(listening && session===voiceSessionId){
+        try{thisRecognition.start();}
+        catch(e){
+          listening=false;
+          voiceBtn.textContent='● Start Voice Typing';
+          voiceBtn.classList.remove('listening');
+          voiceStatus.textContent='Could not start microphone. Try pressing Start Voice Typing again.';
+        }
+      }
+    },220);
+  }
+}
+
+function stopListening(){
+  listening=false;
+  voiceSessionId++; // invalidates callbacks from the old recognition session
+  clearTimeout(restartTimer);
+  if(recognition){
+    try{recognition.stop();}catch(e){}
+  }
+  input.value=voiceBase;
+  updateStats();
+  voiceBtn.textContent='● Start Voice Typing';
+  voiceBtn.classList.remove('listening');
+  voiceStatus.textContent='Stopping voice typing…';
+}
+
+function toggleListening(){listening?stopListening():startListening()}
+
+voiceLanguage.addEventListener('change',()=>{
+  if(listening){
+    // Restart with the newly selected language, keeping the text already recognized.
+    stopListening();
+    startListening();
+  }
+});
+
+function insertVoiceNewLine(){
+  voiceBase=input.value;
+  if(voiceBase && !/\\n$/.test(voiceBase))voiceBase+='\\n';
+  input.value=voiceBase;
+  updateStats();
+  input.focus();
+}
+function insertVoiceSpace(){
+  voiceBase=input.value;
+  if(voiceBase && !/\\s$/.test(voiceBase))voiceBase+=' ';
+  input.value=voiceBase;
+  updateStats();
+  input.focus();
+}
+function clearVoiceText(){
+  if(listening) stopListening();
+  saveHistory();
+  voiceBase='';
+  input.value='';
+  updateStats();
+  voiceStatus.textContent='Voice text cleared.';
+}
+const cons={'क':'k','ख':'kh','ग':'g','घ':'gh','ङ':'ng','च':'ch','छ':'chh','ज':'j','झ':'jh','ञ':'ny','ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n','त':'t','थ':'th','द':'d','ध':'dh','न':'n','प':'p','फ':'ph','ब':'b','भ':'bh','म':'m','य':'y','र':'r','ल':'l','व':'v','श':'sh','ष':'sh','स':'s','ह':'h','क़':'q','ख़':'kh','ग़':'gh','ज़':'z','ड़':'r','ढ़':'rh','फ़':'f','य़':'y'},vowels={'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo','ऋ':'ri','ए':'e','ऐ':'ai','ओ':'o','औ':'au'},matra={'ा':'aa','ि':'i','ी':'ee','ु':'u','ू':'oo','ृ':'ri','े':'e','ै':'ai','ो':'o','ौ':'au','ं':'n','ः':'h','ँ':'n'};function transliterateWord(w){
+  if(!/[\u0900-\u097F]/.test(w))return w;
+  let out='';
+  for(let i=0;i<w.length;i++){
+    const c=w[i];
+    if(vowels[c]){out+=vowels[c];continue;}
+    if(cons[c]){
+      out+=cons[c];
+      const next=w[i+1];
+      if(next==='्'){i++;continue;}
+      if(next && matra[next])continue;
+      if(next && cons[next]){out+='a';continue;}
+      if(i===w.length-1){continue;}
+      out+='a';
+      continue;
+    }
+    if(matra[c]){out+=matra[c];continue;}
+    if(c==='्'){out=out.replace(/a$/,'');continue;}
+    out+=c;
+  }
+  return out.replace(/aa([aeiou])/g,'a$1');
+}
+function toRomanHinglish(t){
+  return t.split(/(\s+)/).map(x=>/\s+/.test(x)?x:transliterateWord(x)).join('');
+}
+const themeBtn=document.getElementById('themeBtn');let light=localStorage.getItem('mct-theme')==='light';function theme(){let r=document.documentElement.style;if(light){r.setProperty('--bg','#f1f3f6');r.setProperty('--card','#fff');r.setProperty('--panel','#f5f6f8');r.setProperty('--border','#d5d8de');r.setProperty('--text','#1d1f23');r.setProperty('--btn','#eceef1')}else{r.setProperty('--bg','#171717');r.setProperty('--card','#222');r.setProperty('--panel','#2d2d2d');r.setProperty('--border','#454545');r.setProperty('--text','#f4f4f4');r.setProperty('--btn','#383838')}}themeBtn.onclick=()=>{light=!light;localStorage.setItem('mct-theme',light?'light':'dark');theme()};theme();
+</script></body></html>
